@@ -3,7 +3,7 @@ package com.example.recyclerview.domain
 data class ShopItem(
     val name: String,
     val count: Int,
-    val isActive: Boolean,
+    val enabled: Boolean,
     var id: Int = UNDEFINED_ID
 ) {
     companion object {
