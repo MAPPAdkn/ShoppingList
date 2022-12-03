@@ -2,8 +2,12 @@ package com.example.recyclerview.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.recyclerview.R
+import com.example.recyclerview.databinding.ItemShopDisabledBinding
+import com.example.recyclerview.databinding.ItemShopEnabledBinding
 import com.example.recyclerview.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
@@ -17,18 +21,30 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Unknown viewType $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent,false)
-        return ShopItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+        return ShopItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = getItem(position)
-        holder.tvName.text = "${shopItem.name} is ${shopItem.enabled}"
-        holder.tvCount.text = shopItem.count.toString()
-        holder.itemView.setOnClickListener {
+        val binding = holder.binding
+        when (binding) {
+            is ItemShopEnabledBinding -> {
+                binding.shopItem = shopItem
+            }
+            is ItemShopDisabledBinding -> {
+                binding.shopItem = shopItem
+            }
+        }
+        binding.root.setOnClickListener {
             onShopItemClick?.invoke(shopItem)
         }
-        holder.itemView.setOnLongClickListener {
+        binding.root.setOnLongClickListener {
             onShopItemLongClick?.invoke(shopItem)
             true
         }
